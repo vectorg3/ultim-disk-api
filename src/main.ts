@@ -4,13 +4,15 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-      const app = await NestFactory.create(AppModule);
-      app.useGlobalPipes(
-            new ValidationPipe({
-                  whitelist: true,
-                  forbidNonWhitelisted: true
-            })
-      );
+      const app = await NestFactory.create(AppModule, {
+            cors: {
+                  origin: '*',
+                  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+                  credentials: true
+            }
+      });
+      app.setGlobalPrefix('api');
+      app.useGlobalPipes(new ValidationPipe());
 
       const config = new DocumentBuilder()
             .setTitle('UltimDiskApi')
@@ -21,4 +23,5 @@ async function bootstrap() {
       SwaggerModule.setup('api', app, documentFactory);
       await app.listen(process.env.PORT ?? 3000);
 }
+
 bootstrap();

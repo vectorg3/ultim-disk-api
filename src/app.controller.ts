@@ -1,7 +1,6 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthGuard } from './guards/auth.guard';
-import { RequestWithUserId } from './models';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()
@@ -9,9 +8,4 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @Controller()
 export class AppController {
       constructor(private readonly appService: AppService) {}
-
-      @Get('test')
-      test(@Req() request: RequestWithUserId): string {
-            return request.userId;
-      }
 }

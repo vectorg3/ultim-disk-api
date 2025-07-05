@@ -2,12 +2,11 @@ import {
       CanActivate,
       ExecutionContext,
       Injectable,
-      Logger,
       UnauthorizedException
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { RequestWithUserId } from '../models';
 
 @Injectable()
@@ -27,7 +26,8 @@ export class AuthGuard implements CanActivate {
                         this.jwtService.verify(token);
                   request.userId = payload.userId;
             } catch (e) {
-                  Logger.error(e);
+                  if (e instanceof TokenExpiredError)
+                        throw new UnauthorizedException('Токен недействителен');
                   throw new UnauthorizedException('Неправильный токен');
             }
             return true;

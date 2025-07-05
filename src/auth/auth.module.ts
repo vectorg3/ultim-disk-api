@@ -7,6 +7,7 @@ import {
       RefreshToken,
       RefreshTokenSchema
 } from './schemas/refresh-token.schema';
+import { FileService } from '../shared/file/file.service';
 
 @Module({
       imports: [
@@ -19,6 +20,6 @@ import {
             ])
       ],
       controllers: [AuthController],
-      providers: [AuthService]
+      providers: [AuthService, FileService]
 })
 export class AuthModule {}

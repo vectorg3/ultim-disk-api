@@ -12,6 +12,7 @@ import { LoginDto } from './dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshToken } from './schemas/refresh-token.schema';
 import { v4 as uuidv4 } from 'uuid';
+import { FileService } from '../shared/file';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,8 @@ export class AuthService {
             @InjectModel(User.name) private userModel: Model<User>,
             @InjectModel(RefreshToken.name)
             private refreshTokenModel: Model<RefreshToken>,
-            private jwtService: JwtService
+            private jwtService: JwtService,
+            private fileService: FileService
       ) {}
 
       async signUp(body: SignupDto) {
@@ -28,28 +30,28 @@ export class AuthService {
                   email: email
             });
             if (emailInUse)
-                  throw new BadRequestException('Такая почта уже используется');
+                  throw new BadRequestException(
+                        'Account with this email already exists'
+                  );
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            await this.userModel.create({
+            const user = await this.userModel.create({
                   name,
                   email,
                   password: hashedPassword
             });
+            this.fileService.createDir({ user: String(user._id), path: '' });
+            return this.generateUserTokens(String(user._id));
       }
 
       async login(body: LoginDto) {
             const { email, password } = body;
             const user = await this.userModel.findOne<User>({ email });
             if (!user)
-                  throw new UnauthorizedException(
-                        'Неверно указаны почта или пароль'
-                  );
+                  throw new UnauthorizedException('Wrong email or password');
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch)
-                  throw new UnauthorizedException(
-                        'Неверно указаны почта или пароль'
-                  );
+                  throw new UnauthorizedException('Wrong email or password');
             return this.generateUserTokens(String(user._id));
       }
 
@@ -58,7 +60,7 @@ export class AuthService {
                   token: refreshToken,
                   expiryDate: { $gte: new Date() }
             });
-            if (!dbToken) throw new UnauthorizedException('Неправильный токен');
+            if (!dbToken) throw new UnauthorizedException('Invalid token');
             return this.generateUserTokens(String(dbToken.userId));
       }
 
