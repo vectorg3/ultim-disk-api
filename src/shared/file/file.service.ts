@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ICreateDir } from './models';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'node:fs';
@@ -14,12 +14,16 @@ export class FileService {
                         fs.mkdirSync(filePath);
                   } else {
                         throw new BadRequestException(
-                              'Папка по данному пути уже существует'
+                              'That directory already exists!'
                         );
                   }
             } catch (e) {
-                  Logger.error(e);
-                  throw new BadRequestException('Не удалось создать папку');
+                  if (e.response.message)
+                        throw new BadRequestException(e.response.message);
+                  else
+                        throw new BadRequestException(
+                              'Error while creating directory'
+                        );
             }
       }
 }

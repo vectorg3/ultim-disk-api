@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
 export class RefreshTokenDto {
-      @IsString({ message: 'Вы не указали токен' })
+      @IsString({ message: 'Token not found' })
       refreshToken: string;
 }

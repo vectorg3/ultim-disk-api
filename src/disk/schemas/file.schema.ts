@@ -3,7 +3,9 @@ import mongoose, { HydratedDocument } from 'mongoose';
 
 export type FileDocument = HydratedDocument<FileModel>;
 
-@Schema()
+@Schema({
+      timestamps: true
+})
 export class FileModel {
       @Prop({ required: true })
       name: string;

@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { DiskModule } from './disk/disk.module';
+import { UserModule } from './user/user.module';
 import config from './config/config';
 
 @Module({
@@ -31,7 +32,8 @@ import config from './config/config';
                   inject: [ConfigService]
             }),
             AuthModule,
-            DiskModule
+            DiskModule,
+            UserModule
       ],
       controllers: [AppController],
       providers: [AppService]

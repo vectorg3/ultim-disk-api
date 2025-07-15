@@ -1,6 +1,6 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from './shared/guards';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()

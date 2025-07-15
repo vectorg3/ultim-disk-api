@@ -10,9 +10,9 @@ import {
       ValidationPipe
 } from '@nestjs/common';
 import { DiskService } from './disk.service';
-import { RequestWithUserId } from '../models';
-import { CreateDirDto } from './dtos/createDir.dto';
-import { AuthGuard } from '../guards/auth.guard';
+import { RequestWithUserId } from '../shared';
+import { CreateDirDto } from './dtos';
+import { AuthGuard } from '../shared/guards';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('DiskController')
@@ -22,7 +22,7 @@ export class DiskController {
       constructor(private readonly diskService: DiskService) {}
 
       @Post()
-      @ApiOperation({ summary: 'Создание директории' })
+      @ApiOperation({ summary: 'Directory creating' })
       @UsePipes(new ValidationPipe({ transform: true }))
       @ApiBody({ type: CreateDirDto })
       createDir(
@@ -33,7 +33,7 @@ export class DiskController {
       }
 
       @Get()
-      @ApiOperation({ summary: 'Получении содержимого директории' })
+      @ApiOperation({ summary: 'Getting directory' })
       getDir(@Query('parent') id: string, @Req() req: RequestWithUserId) {
             return this.diskService.getDirFiles(id, req.userId);
       }

@@ -3,16 +3,14 @@ import {
       Injectable,
       UnauthorizedException
 } from '@nestjs/common';
-import { SignupDto } from './dtos/signup.dto';
+import { LoginDto, SignupDto } from './dtos';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schemas/user.schema';
+import { FileService, User } from '../shared';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { LoginDto } from './dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { RefreshToken } from './schemas/refresh-token.schema';
+import { RefreshToken } from './schemas';
 import { v4 as uuidv4 } from 'uuid';
-import { FileService } from '../shared/file';
 
 @Injectable()
 export class AuthService {
@@ -64,7 +62,7 @@ export class AuthService {
             return this.generateUserTokens(String(dbToken.userId));
       }
 
-      async generateUserTokens(userId: string) {
+      private async generateUserTokens(userId: string) {
             const accessToken = this.jwtService.sign(
                   { userId },
                   { expiresIn: '3h' }
@@ -79,7 +77,7 @@ export class AuthService {
             };
       }
 
-      async storeRefreshToken(token: string, userId: string) {
+      private async storeRefreshToken(token: string, userId: string) {
             const expiryDate = new Date();
             expiryDate.setDate(expiryDate.getDate() + 1);
             await this.refreshTokenModel.updateOne(
