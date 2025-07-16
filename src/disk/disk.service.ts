@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { CreateDirDto } from './dtos/createDir.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FileModel } from './schemas/file.schema';
 import { Model, Types } from 'mongoose';
-import { FileService } from '../shared/file';
+import { FileService } from '@shared/file';
+import { User } from '@shared/schemas';
+import { FileModel } from '@disk/schemas';
+import { CreateDirDto } from '@disk/dtos';
+import { TariffPlanSpace } from '@shared/models';
 
 @Injectable()
 export class DiskService {
       constructor(
             @InjectModel(FileModel.name) private fileModel: Model<FileModel>,
+            @InjectModel(User.name) private userModel: Model<User>,
             private fileService: FileService
       ) {}
 
@@ -48,5 +51,41 @@ export class DiskService {
                   parent: dirId,
                   user: userId
             });
+      }
+
+      async uploadFile(
+            file: Express.Multer.File,
+            userId: string,
+            parentId: string
+      ) {
+            const parent = await this.fileModel.findOne({
+                  user: userId,
+                  _id: parentId
+            });
+            const user = await this.userModel.findById(userId);
+            if (!user) throw new BadRequestException('User not found');
+            if (file.size > TariffPlanSpace.get(user.plan)!)
+                  throw new BadRequestException(
+                        'Your free space is not enough to save this file'
+                  );
+            user.diskSpace += file.size;
+            let path = '';
+            if (parent) path = `${parent.path}\\${file.originalname}`;
+            else path = file.originalname;
+            this.fileService.saveFile(file, path, userId);
+            const type = file.originalname.split('.').pop();
+            const dbFile = await this.fileModel.create({
+                  path,
+                  type,
+                  user: userId,
+                  size: file.size,
+                  parent: parent?._id,
+                  name: file.originalname
+            });
+            if (parent) {
+                  parent.childs.push(dbFile._id);
+                  await parent.save();
+            }
+            await user.save();
       }
 }

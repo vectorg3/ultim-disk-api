@@ -16,6 +16,13 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@auth/*": ["src/auth/*"],
+      "@shared/*": ["src/shared/*"],
+      "@disk/*": ["src/disk/*"],
+      "@config/*": ["src/config/*"],
+      "@user/*": ["src/user/*"],
+    }
   }
 }

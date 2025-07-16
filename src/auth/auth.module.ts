@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { FileService, User, UserSchema } from '../shared';
 import { MongooseModule } from '@nestjs/mongoose';
-import { RefreshToken, RefreshTokenSchema } from './schemas';
+import { RefreshToken, RefreshTokenSchema } from '@auth/schemas';
+import { User, UserSchema } from '@shared/schemas';
+import { AuthController } from '@auth/auth.controller';
+import { AuthService } from '@auth/auth.service';
+import { FileService } from '@shared/file';
 
 @Module({
       imports: [

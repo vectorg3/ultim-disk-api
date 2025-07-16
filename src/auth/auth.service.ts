@@ -3,14 +3,15 @@ import {
       Injectable,
       UnauthorizedException
 } from '@nestjs/common';
-import { LoginDto, SignupDto } from './dtos';
 import { InjectModel } from '@nestjs/mongoose';
-import { FileService, User } from '../shared';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { RefreshToken } from './schemas';
 import { v4 as uuidv4 } from 'uuid';
+import { User } from '@shared/schemas';
+import { RefreshToken } from '@auth/schemas';
+import { FileService } from '@shared/file';
+import { LoginDto, SignupDto } from '@auth/dtos';
 
 @Injectable()
 export class AuthService {

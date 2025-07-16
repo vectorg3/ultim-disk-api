@@ -5,15 +5,18 @@ import {
       Post,
       Query,
       Req,
+      UploadedFile,
       UseGuards,
+      UseInterceptors,
       UsePipes,
       ValidationPipe
 } from '@nestjs/common';
-import { DiskService } from './disk.service';
-import { RequestWithUserId } from '../shared';
-import { CreateDirDto } from './dtos';
-import { AuthGuard } from '../shared/guards';
+import { AuthGuard } from '@shared/guards';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { DiskService } from '@disk/disk.service';
+import { CreateDirDto } from '@disk/dtos';
+import { RequestWithUserId } from '@shared/models';
 
 @ApiTags('DiskController')
 @UseGuards(AuthGuard)
@@ -36,5 +39,16 @@ export class DiskController {
       @ApiOperation({ summary: 'Getting directory' })
       getDir(@Query('parent') id: string, @Req() req: RequestWithUserId) {
             return this.diskService.getDirFiles(id, req.userId);
+      }
+
+      @Post('upload')
+      @ApiOperation({ summary: 'File uploading' })
+      @UseInterceptors(FileInterceptor('file'))
+      uploadFile(
+            @UploadedFile() file: Express.Multer.File,
+            @Req() req: RequestWithUserId,
+            @Query('parent') parentId: string
+      ) {
+            return this.diskService.uploadFile(file, req.userId, parentId);
       }
 }

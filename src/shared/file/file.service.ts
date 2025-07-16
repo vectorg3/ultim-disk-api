@@ -26,4 +26,17 @@ export class FileService {
                         );
             }
       }
+
+      saveFile(file: Express.Multer.File, path: string, userId: string) {
+            try {
+                  const filePath = `${this.configService.get('filePath')}\\${userId}\\${path}`;
+                  if (fs.existsSync(filePath))
+                        throw new BadRequestException('File already exists!');
+                  fs.writeFileSync(filePath, file.buffer, {});
+            } catch (e) {
+                  if (e.response.message)
+                        throw new BadRequestException(e.response.message);
+                  else throw new BadRequestException('Error while saving file');
+            }
+      }
 }
