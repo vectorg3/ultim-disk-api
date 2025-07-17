@@ -56,7 +56,7 @@ export class DiskService {
       async uploadFile(
             file: Express.Multer.File,
             userId: string,
-            parentId: string
+            parentId?: string
       ) {
             const parent = await this.fileModel.findOne({
                   user: userId,
@@ -79,7 +79,7 @@ export class DiskService {
                   type,
                   user: userId,
                   size: file.size,
-                  parent: parent?._id,
+                  parent: parentId,
                   name: file.originalname
             });
             if (parent) {

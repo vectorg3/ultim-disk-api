@@ -47,7 +47,7 @@ export class DiskController {
       uploadFile(
             @UploadedFile() file: Express.Multer.File,
             @Req() req: RequestWithUserId,
-            @Query('parent') parentId: string
+            @Query('parent') parentId?: string
       ) {
             return this.diskService.uploadFile(file, req.userId, parentId);
       }
