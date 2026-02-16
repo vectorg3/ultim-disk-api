@@ -84,8 +84,19 @@ export class DiskService {
             });
             if (parent) {
                   parent.childs.push(dbFile._id);
+                  parent.size += file.size;
                   await parent.save();
             }
             await user.save();
+      }
+
+      async deleteFile(id: string, userId: string) {
+            const file = await this.fileModel.findOne({
+                  _id: id,
+                  user: userId
+            });
+            if (!file) return new BadRequestException('File not found');
+            this.fileService.deleteFile(file);
+            await this.fileModel.findOneAndDelete({ user: userId, _id: id });
       }
 }

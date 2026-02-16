@@ -39,4 +39,10 @@ export class FileService {
                   else throw new BadRequestException('Error while saving file');
             }
       }
+
+      deleteFile(file: any) {
+            const path = `${this.configService.get('filePath')}\\${file.user}\\${file.path}`;
+            if (file.type === 'dir') fs.rmdirSync(path);
+            else fs.unlinkSync(path);
+      }
 }

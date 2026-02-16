@@ -1,6 +1,7 @@
 import {
       Body,
       Controller,
+      Delete,
       Get,
       Post,
       Query,
@@ -50,5 +51,11 @@ export class DiskController {
             @Query('parent') parentId?: string
       ) {
             return this.diskService.uploadFile(file, req.userId, parentId);
+      }
+
+      @Delete('delete')
+      @ApiOperation({ summary: 'Delete directory' })
+      deleteFile(@Query('fileId') id: string, @Req() req: RequestWithUserId) {
+            return this.diskService.deleteFile(id, req.userId);
       }
 }
