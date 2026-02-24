@@ -53,6 +53,17 @@ export class DiskService {
             });
       }
 
+      async downloadFile(fileId: string, userId: string) {
+            const file = await this.fileModel.findOne({
+                  _id: fileId,
+                  user: userId
+            });
+            if (!file) throw new BadRequestException('File was not found!');
+            if (file.type == 'dir')
+                  throw new BadRequestException('Cannot download directory');
+            return this.fileService.downloadFile(file, userId);
+      }
+
       async uploadFile(
             file: Express.Multer.File,
             userId: string,

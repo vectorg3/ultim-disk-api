@@ -1,7 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { ICreateDir } from './models';
+import {
+      BadRequestException,
+      Injectable,
+      StreamableFile
+} from '@nestjs/common';
+import { encodeFileName, ICreateDir } from './models';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'node:fs';
+import { createReadStream } from 'node:fs';
 
 @Injectable()
 export class FileService {
@@ -44,5 +49,16 @@ export class FileService {
             const path = `${this.configService.get('filePath')}\\${file.user}\\${file.path}`;
             if (file.type === 'dir') fs.rmdirSync(path);
             else fs.unlinkSync(path);
+      }
+
+      downloadFile(file: any, userId: string) {
+            const path = `${this.configService.get('filePath')}\\${userId}\\${file.path}`;
+            if (!fs.existsSync(path))
+                  throw new BadRequestException('File was not found!');
+            const responseFile = createReadStream(path);
+            const encodedFileName = encodeFileName(file.name);
+            return new StreamableFile(responseFile, {
+                  disposition: `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}; filename="${encodedFileName}"`
+            });
       }
 }

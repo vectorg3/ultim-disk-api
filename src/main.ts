@@ -8,7 +8,8 @@ async function bootstrap() {
             cors: {
                   origin: '*',
                   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-                  credentials: true
+                  credentials: true,
+                  exposedHeaders: ['Content-Disposition']
             }
       });
       app.setGlobalPrefix('api');

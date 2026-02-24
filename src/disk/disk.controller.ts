@@ -42,6 +42,12 @@ export class DiskController {
             return this.diskService.getDirFiles(id, req.userId);
       }
 
+      @Get('download')
+      @ApiOperation({ summary: 'Download file' })
+      downloadFile(@Query('fileId') id: string, @Req() req: RequestWithUserId) {
+            return this.diskService.downloadFile(id, req.userId);
+      }
+
       @Post('upload')
       @ApiOperation({ summary: 'File uploading' })
       @UseInterceptors(FileInterceptor('file'))
