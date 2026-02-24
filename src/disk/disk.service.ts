@@ -108,6 +108,21 @@ export class DiskService {
             });
             if (!file) return new BadRequestException('File not found');
             this.fileService.deleteFile(file);
-            await this.fileModel.findOneAndDelete({ user: userId, _id: id });
+            const deleteFileRecursive = async (file) => {
+                  if (file.childs)
+                        for (const childId of file.childs) {
+                              const child = await this.fileModel.findOne({
+                                    _id: childId,
+                                    user: userId
+                              });
+                              await deleteFileRecursive(child);
+                        }
+                  await this.fileModel.findOneAndDelete({
+                        user: userId,
+                        _id: file.id
+                  });
+            };
+
+            await deleteFileRecursive(file);
       }
 }

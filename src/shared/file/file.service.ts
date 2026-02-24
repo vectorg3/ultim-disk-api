@@ -47,7 +47,7 @@ export class FileService {
 
       deleteFile(file: any) {
             const path = `${this.configService.get('filePath')}\\${file.user}\\${file.path}`;
-            if (file.type === 'dir') fs.rmdirSync(path);
+            if (file.type === 'dir') fs.rmSync(path, { recursive: true });
             else fs.unlinkSync(path);
       }
 
